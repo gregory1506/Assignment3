@@ -5,8 +5,10 @@ import math
 import socket
 import threading
 import time
-
 from bottle import route, run
+from azure.storage.queue import QueueService
+queue_service = QueueService(account_name='gjocloudassignment3',\
+    account_key='7+WP5BOHFDDsBON6qqdqD8YdzQxUuP2jlcOIR/0b0Qvh/gduEVDI0YnoLYN82tZFq58H82+TdtDdsRJfOP+hjA==')
 
 hostname = socket.gethostname()
 hostport = 9000
