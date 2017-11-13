@@ -34,6 +34,47 @@
       "metadata": {
         "description": "Admin password on all VMs."
       }
+    },
+    "cloudassignment3Type": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "gregseonType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "masterName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "masterAdminUserName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "masterAdminPassword": {
+      "type": "securestring"
+    },
+    "masterUbuntuOSVersion": {
+      "type": "string",
+      "defaultValue": "14.04.2-LTS",
+      "allowedValues": [
+        "12.04.5-LTS",
+        "14.04.2-LTS"
+      ]
     }
   },
   "variables": {
@@ -63,7 +104,17 @@
     "imageReference": "[variables('osType')]",
     "computeApiVersion": "2017-03-30",
     "networkApiVersion": "2017-04-01",
-    "insightsApiVersion": "2015-04-01"
+    "insightsApiVersion": "2015-04-01",
+    "cloudassignment3Name": "[concat('cloudassignment3', uniqueString(resourceGroup().id))]",
+    "gregseonName": "[concat('gregseon', uniqueString(resourceGroup().id))]",
+    "masterImagePublisher": "Canonical",
+    "masterImageOffer": "UbuntuServer",
+    "masterOSDiskName": "masterOSDisk",
+    "masterVmSize": "Standard_D2_v2",
+    "masterVnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+    "masterSubnetRef": "[concat(variables('masterVnetID'), '/subnets/', variables('subnetName'))]",
+    "masterStorageAccountContainerName": "vhds",
+    "masterNicName": "[concat(parameters('masterName'), 'NetworkInterface')]"
   },
   "resources": [
     {
@@ -301,6 +352,91 @@
             ]
           }
         ]
+      }
+    },
+    {
+      "name": "[variables('gregseonName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-01-01",
+      "sku": {
+        "name": "[parameters('gregseonType')]"
+      },
+      "dependsOn": [ ],
+      "tags": {
+        "displayName": "gregseon"
+      },
+      "kind": "Storage"
+    },
+    {
+      "name": "[variables('masterNicName')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[variables('location')]",
+      "apiVersion": "2016-03-30",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+      ],
+      "tags": {
+        "displayName": "masterNic"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('masterSubnetRef')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('masterName')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('gregseonName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('masterNicName'))]"
+      ],
+      "tags": {
+        "displayName": "master"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('masterVmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('masterName')]",
+          "adminUsername": "greg",
+          "adminPassword": "Cloudcloud12"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('masterImagePublisher')]",
+            "offer": "[variables('masterImageOffer')]",
+            "sku": "[parameters('masterUbuntuOSVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "masterOSDisk",
+            "vhd": {
+              "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts', variables('gregseonName')), '2016-01-01').primaryEndpoints.blob, variables('masterStorageAccountContainerName'), '/', variables('masterOSDiskName'), '.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('masterNicName'))]"
+            }
+          ]
+        }
       }
     }
   ]

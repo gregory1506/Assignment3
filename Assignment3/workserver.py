@@ -51,7 +51,8 @@ def writebody():
     return body
 
 
-@route('/',method='POST')
+@route('/')
+@route('/home',method='POST')
 def root():
     #data = request.json
     #new_entity = Entity()
