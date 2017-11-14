@@ -77,6 +77,7 @@ def startThreads():
         tr.join()
 
 
+
 @route('/')
 def root():
     return writebody()
@@ -96,5 +97,6 @@ def stop_work():
     keepworking = False
     return writebody()
 
-
-run(host=hostname, port=hostport)
+if __name__ == '__main__':
+    run(host=hostname, port=hostport)
+    startThreads()
