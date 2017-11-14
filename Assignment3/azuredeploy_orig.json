@@ -4,7 +4,7 @@
   "parameters": {
     "vmSku": {
       "type": "string",
-      "defaultValue": "Standard_A1",
+      "defaultValue": "Standard_DS1_v2",
       "metadata": {
         "description": "Size of VMs in the VM Scale Set."
       }
@@ -34,6 +34,48 @@
       "metadata": {
         "description": "Admin password on all VMs."
       }
+    },
+    "cloudassignment3Type": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "gregseonType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "masterName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "masterAdminUserName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "masterAdminPassword": {
+      "type": "securestring"
+    },
+    "masterUbuntuOSVersion": {
+      "type": "string",
+      "defaultValue": "14.04.2-LTS",
+      "allowedValues": [
+        "12.04.5-LTS",
+        "14.04.2-LTS",
+        "16.04.2-LTS"
+      ]
     }
   },
   "variables": {
@@ -64,6 +106,16 @@
     "computeApiVersion": "2017-03-30",
     "networkApiVersion": "2017-04-01",
     "insightsApiVersion": "2015-04-01",
+    "cloudassignment3Name": "[concat('cloudassignment3', uniqueString(resourceGroup().id))]",
+    "gregseonName": "[concat('gregseon', uniqueString(resourceGroup().id))]",
+    "masterImagePublisher": "Canonical",
+    "masterImageOffer": "UbuntuServer",
+    "masterOSDiskName": "masterOSDisk",
+    "masterVmSize": "Standard_D2_v2",
+    "masterVnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+    "masterSubnetRef": "[concat(variables('masterVnetID'), '/subnets/', variables('subnetName'))]",
+    "masterStorageAccountContainerName": "vhds",
+    "masterNicName": "[concat(parameters('masterName'), 'NetworkInterface')]"
   },
   "resources": [
     {
