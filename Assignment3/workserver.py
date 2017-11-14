@@ -22,7 +22,6 @@ bus_service.create_queue('taskqueue')
 
 hostname = socket.gethostname()
 hostport = 9000
-keepworking = False  # boolean to switch worker thread on or off
 sttime = time.time()
 graph_pts = []
 
@@ -31,7 +30,7 @@ def workerthread():
     # outer loop to run while waiting
     while (True):
         # main loop to thrash the CPU
-        while (bus_service.get_queue('taskqueue').message_count > 0) and keepworking:
+        while bus_service.get_queue('taskqueue').message_count > 0:
             msg = bus_service.receive_queue_message('taskqueue', peek_lock=True)
             data = json.loads(msg.body.decode('utf-8'))
             new_entity = Entity()
@@ -50,7 +49,7 @@ def writebody():
     body = '<html><head><title>work interface - build</title></head>'
     body += '<body><h2>worker interface on ' + hostname + '</h2><ul><h3>'
 
-    if keepworking == False:
+    if True:
         body += '<br/>worker thread is not running. <a href="./do_work">start work</a><br/>'
     else:
         body += '<br/>worker thread is running. <a href="./stop_work">stop work</a><br/>'
@@ -81,17 +80,11 @@ def root():
 
 @route('/do_work')
 def do_work():
-    global keepworking
-    # start worker thread
-    keepworking = True
     return writebody()
 
 
 @route('/stop_work')
 def stop_work():
-    global keepworking
-    # stop worker thread
-    keepworking = False
     return writebody()
 
 run(host=hostname, port=hostport)
