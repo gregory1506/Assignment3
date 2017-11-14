@@ -32,9 +32,10 @@
       <Visible>False</Visible>
     </None>
     <Content Include="Deploy-AzureResourceGroup.ps1" />
-    <Content Include="installserver.sh" />
+    <Content Include="installserver_nosrvc.sh" />
     <Content Include="README.md" />
     <Content Include="workserver.py" />
+    <None Include="installserver.sh" />
     <None Include="queue_load.py" />
     <None Include="singleVm.sh" />
   </ItemGroup>
