@@ -31,17 +31,17 @@ def workerthread():
     # outer loop to run while waiting
     while (True):
         # main loop to thrash the CPU
-        while bus_service.get_queue('taskqueue').message_count > 0:
+        while (bus_service.get_queue('taskqueue').message_count > 0) and keepworking:
             msg = bus_service.receive_queue_message('taskqueue', peek_lock=True)
-            data = json.loads(msg.body)
+            data = json.loads(msg.body.decode('utf-8'))
             new_entity = Entity()
             new_entity.PartitionKey = data['TransactionID']
             new_entity.RowKey = data['UserId']
             new_entity.Sellerid = data['SellerID']
-            new_entity.ProductName = entity['ProductName']
-            new_entity.SalePrice = Entity['SalePrice']
-            new_entity.TransactionDate = Entity['TransactionDate']
-            mystorage.table_service.insert_or_replace_entity('Transactions',new_entity)
+            new_entity.ProductName = data['ProductName']
+            new_entity.SalePrice = data['SalePrice']
+            new_entity.TransactionDate = data['TransactionDate']
+            table_service.insert_or_replace_entity('Transactions',new_entity)
             msg.delete()
 
 def writebody():
@@ -50,7 +50,7 @@ def writebody():
     body = '<html><head><title>work interface - build</title></head>'
     body += '<body><h2>worker interface on ' + hostname + '</h2><ul><h3>'
 
-    if keepworking == false:
+    if keepworking == False:
         body += '<br/>worker thread is not running. <a href="./do_work">start work</a><br/>'
     else:
         body += '<br/>worker thread is running. <a href="./stop_work">stop work</a><br/>'
@@ -63,18 +63,15 @@ def writebody():
     graph_pts.append((current_count,current_time))
     return body
 
-def startThreads():
-    # start the worker thread
+threads = []
+for i in range(5):
+    t = threading.Thread(target=workerthread, args=())
+    # Sticks the thread in a list so that it remains accessible
+    threads.append(t)
+    t.start()
 
-    threads = []
-    for i in range(5):
-        t = threading.Thread(target=workerthread, args=())
-        # Sticks the thread in a list so that it remains accessible
-        threads.append(t)
-        t.start()
-
-    for tr in threads:
-        tr.join()
+    #for tr in threads:
+    #    tr.join()
 
 
 
@@ -97,6 +94,4 @@ def stop_work():
     keepworking = False
     return writebody()
 
-if __name__ == '__main__':
-    run(host=hostname, port=hostport)
-    startThreads()
+run(host=hostname, port=hostport)
