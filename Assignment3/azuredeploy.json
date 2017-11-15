@@ -16,6 +16,13 @@
       },
       "maxLength": 9
     },
+    "autoscalename": {
+      "type": "string",
+      "metadata": {
+        "description": "Try entering a different name each time to avoid Microsoft Insight Errors for your metric"
+      },
+      "maxLength": 12
+    },
     "instanceCount": {
       "type": "int",
       "metadata": {
@@ -57,7 +64,7 @@
     "osType": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
-      "sku": "16.04.LTS",
+      "sku": "16.04-LTS",
       "version": "latest"
     },
     "imageReference": "[variables('osType')]",
@@ -241,13 +248,13 @@
     {
       "type": "Microsoft.Insights/autoscaleSettings",
       "apiVersion": "[variables('insightsApiVersion')]",
-      "name": "autoscalehost",
+      "name": "[parameters('autoscalename')]",
       "location": "[variables('location')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachineScaleSets/', parameters('vmSSName'))]"
       ],
       "properties": {
-        "name": "autoscalehost",
+        "name": "[parameters('autoscalename')]",
         "targetResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.Compute/virtualMachineScaleSets/', parameters('vmSSName'))]",
         "enabled": true,
         "profiles": [
@@ -263,13 +270,13 @@
                 "metricTrigger": {
                   "metricName": "MessageCount",
                   "metricNamespace": "",
-                  "metricResourceUri": "/subscriptions/s1/resourceGroups/rg1/providers/Microsoft.ServiceBus/namespaces/mySB/queues/myqueue",
+                  "metricResourceUri": "/subscriptions/d494b561-b40d-4b16-a8d1-d4a6bdcf54b2/resourcegroups/GregSeon/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/taskqueue",
                   "timeGrain": "PT5M",
                   "statistic": "Average",
                   "timeWindow": "PT5M",
                   "timeAggregation": "Average",
                   "operator": "GreaterThan",
-                  "threshold": 10
+                  "threshold": 100000
                 },
                 "scaleAction": {
                   "direction": "Increase",
@@ -282,13 +289,13 @@
                 "metricTrigger": {
                   "metricName": "MessageCount",
                   "metricNamespace": "",
-                  "metricResourceUri": "/subscriptions/s1/resourceGroups/rg1/providers/Microsoft.ServiceBus/namespaces/mySB/queues/myqueue",
+                  "metricResourceUri": "/subscriptions/d494b561-b40d-4b16-a8d1-d4a6bdcf54b2/resourcegroups/GregSeon/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/taskqueue",
                   "timeGrain": "PT5M",
                   "statistic": "Average",
                   "timeWindow": "PT5M",
                   "timeAggregation": "Average",
                   "operator": "LessThan",
-                  "threshold": 3
+                  "threshold": 100000
                 },
                 "scaleAction": {
                   "direction": "Decrease",

@@ -4,7 +4,7 @@
   "parameters": {
     "vmSku": {
       "type": "string",
-      "defaultValue": "Standard_DS1_v2",
+      "defaultValue": "Standard_A1",
       "metadata": {
         "description": "Size of VMs in the VM Scale Set."
       }
@@ -34,48 +34,6 @@
       "metadata": {
         "description": "Admin password on all VMs."
       }
-    },
-    "cloudassignment3Type": {
-      "type": "string",
-      "defaultValue": "Standard_LRS",
-      "allowedValues": [
-        "Standard_LRS",
-        "Standard_ZRS",
-        "Standard_GRS",
-        "Standard_RAGRS",
-        "Premium_LRS"
-      ]
-    },
-    "gregseonType": {
-      "type": "string",
-      "defaultValue": "Standard_LRS",
-      "allowedValues": [
-        "Standard_LRS",
-        "Standard_ZRS",
-        "Standard_GRS",
-        "Standard_RAGRS",
-        "Premium_LRS"
-      ]
-    },
-    "masterName": {
-      "type": "string",
-      "minLength": 1
-    },
-    "masterAdminUserName": {
-      "type": "string",
-      "minLength": 1
-    },
-    "masterAdminPassword": {
-      "type": "securestring"
-    },
-    "masterUbuntuOSVersion": {
-      "type": "string",
-      "defaultValue": "14.04.2-LTS",
-      "allowedValues": [
-        "12.04.5-LTS",
-        "14.04.2-LTS",
-        "16.04.2-LTS"
-      ]
     }
   },
   "variables": {
@@ -103,26 +61,16 @@
       "version": "latest"
     },
     "imageReference": "[variables('osType')]",
-    "computeApiVersion": "2017-03-30",
-    "networkApiVersion": "2017-04-01",
-    "insightsApiVersion": "2015-04-01",
-    "cloudassignment3Name": "[concat('cloudassignment3', uniqueString(resourceGroup().id))]",
-    "gregseonName": "[concat('gregseon', uniqueString(resourceGroup().id))]",
-    "masterImagePublisher": "Canonical",
-    "masterImageOffer": "UbuntuServer",
-    "masterOSDiskName": "masterOSDisk",
-    "masterVmSize": "Standard_D2_v2",
-    "masterVnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
-    "masterSubnetRef": "[concat(variables('masterVnetID'), '/subnets/', variables('subnetName'))]",
-    "masterStorageAccountContainerName": "vhds",
-    "masterNicName": "[concat(parameters('masterName'), 'NetworkInterface')]"
+    "computeApiVersion": "2016-04-30-preview",
+    "networkApiVersion": "2016-06-01",
+    "insightsApiVersion": "2015-04-01"
   },
   "resources": [
     {
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('virtualNetworkName')]",
       "location": "[variables('location')]",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "[variables('networkApiVersion')]",
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -143,7 +91,7 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIPAddressName')]",
       "location": "[variables('location')]",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "[variables('networkApiVersion')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
@@ -155,7 +103,7 @@
       "type": "Microsoft.Network/loadBalancers",
       "name": "[variables('loadBalancerName')]",
       "location": "[variables('location')]",
-      "apiVersion": "2017-04-01",
+      "apiVersion": "[variables('networkApiVersion')]",
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
       ],
@@ -207,7 +155,7 @@
       "type": "Microsoft.Compute/virtualMachineScaleSets",
       "name": "[parameters('vmssName')]",
       "location": "[variables('location')]",
-      "apiVersion": "2017-03-30",
+      "apiVersion": "[variables('computeApiVersion')]",
       "dependsOn": [
         "[concat('Microsoft.Network/loadBalancers/', variables('loadBalancerName'))]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
@@ -225,8 +173,7 @@
         "virtualMachineProfile": {
           "storageProfile": {
             "osDisk": {
-              "createOption": "FromImage",
-              "caching": "ReadWrite"
+              "createOption": "FromImage"
             },
             "imageReference": "[variables('imageReference')]"
           },
@@ -293,7 +240,7 @@
     },
     {
       "type": "Microsoft.Insights/autoscaleSettings",
-      "apiVersion": "2015-04-01",
+      "apiVersion": "[variables('insightsApiVersion')]",
       "name": "autoscalehost",
       "location": "[variables('location')]",
       "dependsOn": [
@@ -305,7 +252,7 @@
         "enabled": true,
         "profiles": [
           {
-            "name": "Profile1",
+            "name": "JsonScaler",
             "capacity": {
               "minimum": "1",
               "maximum": "5",
@@ -314,130 +261,45 @@
             "rules": [
               {
                 "metricTrigger": {
-                  "metricName": "Percentage CPU",
+                  "metricName": "MessageCount",
                   "metricNamespace": "",
-                  "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.Compute/virtualMachineScaleSets/', parameters('vmSSName'))]",
-                  "timeGrain": "PT1M",
+                  "metricResourceUri": "/subscriptions/d494b561-b40d-4b16-a8d1-d4a6bdcf54b2/resourcegroups/GregSeon/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/taskqueue",
+                  "timeGrain": "PT5M",
                   "statistic": "Average",
                   "timeWindow": "PT5M",
                   "timeAggregation": "Average",
                   "operator": "GreaterThan",
-                  "threshold": 60
+                  "threshold": 10000
                 },
                 "scaleAction": {
                   "direction": "Increase",
                   "type": "ChangeCount",
                   "value": "1",
-                  "cooldown": "PT1M"
+                  "cooldown": "PT5M"
                 }
               },
               {
                 "metricTrigger": {
-                  "metricName": "Percentage CPU",
+                  "metricName": "MessageCount",
                   "metricNamespace": "",
-                  "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.Compute/virtualMachineScaleSets/', parameters('vmSSName'))]",
-                  "timeGrain": "PT1M",
+                  "metricResourceUri": "/subscriptions/d494b561-b40d-4b16-a8d1-d4a6bdcf54b2/resourcegroups/GregSeon/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/taskqueue",
+                  "timeGrain": "PT5M",
                   "statistic": "Average",
                   "timeWindow": "PT5M",
                   "timeAggregation": "Average",
                   "operator": "LessThan",
-                  "threshold": 30
+                  "threshold": 10000
                 },
                 "scaleAction": {
                   "direction": "Decrease",
                   "type": "ChangeCount",
                   "value": "1",
-                  "cooldown": "PT1M"
+                  "cooldown": "PT5M"
                 }
               }
             ]
           }
         ]
-      }
-    },
-    {
-      "name": "[variables('gregseonName')]",
-      "type": "Microsoft.Storage/storageAccounts",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "2016-01-01",
-      "sku": {
-        "name": "[parameters('gregseonType')]"
-      },
-      "dependsOn": [ ],
-      "tags": {
-        "displayName": "gregseon"
-      },
-      "kind": "Storage"
-    },
-    {
-      "name": "[variables('masterNicName')]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "location": "[variables('location')]",
-      "apiVersion": "2016-03-30",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
-      ],
-      "tags": {
-        "displayName": "masterNic"
-      },
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[variables('masterSubnetRef')]"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "[parameters('masterName')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "2015-06-15",
-      "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('gregseonName'))]",
-        "[resourceId('Microsoft.Network/networkInterfaces', variables('masterNicName'))]"
-      ],
-      "tags": {
-        "displayName": "master"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[variables('masterVmSize')]"
-        },
-        "osProfile": {
-          "computerName": "[parameters('masterName')]",
-          "adminUsername": "greg",
-          "adminPassword": "Cloudcloud12"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "[variables('masterImagePublisher')]",
-            "offer": "[variables('masterImageOffer')]",
-            "sku": "[parameters('masterUbuntuOSVersion')]",
-            "version": "latest"
-          },
-          "osDisk": {
-            "name": "masterOSDisk",
-            "vhd": {
-              "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts', variables('gregseonName')), '2016-01-01').primaryEndpoints.blob, variables('masterStorageAccountContainerName'), '/', variables('masterOSDiskName'), '.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
-          }
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('masterNicName'))]"
-            }
-          ]
-        }
       }
     }
   ]
