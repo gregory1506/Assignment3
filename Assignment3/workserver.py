@@ -24,6 +24,7 @@ hostname = socket.gethostname()
 hostport = 9000
 sttime = time.time()
 graph_pts = []
+stmes = bus_service.get_queue('taskqueue').message_count
 
 # thread which maximizes CPU usage while the keepWorking global is True
 def workerthread():
@@ -53,10 +54,10 @@ def writebody():
         body += '<br/>worker thread is not running. <a href="./do_work">start work</a><br/>'
     else:
         body += '<br/>worker thread is running. <a href="./stop_work">stop work</a><br/>'
-    current_count = bus_service.get_queue('taskqueue').message_count
+    current_count = stmes - bus_service.get_queue('taskqueue').message_count
     current_time = time.time() - sttime
     body += '<br/>usage:<br/><br/>/do_work = start worker thread<br/>/stop_work = stop worker thread<br/>'
-    body += '<br/>Queue Length: ' + str(current_count)
+    body += '<br/>Messages processed: ' + str(current_count)
     body += '<br/>Time from start : ' + str(current_time) + ' seconds<br/>'
     body += '</h3></ul></body></html>'
     graph_pts.append((current_count,current_time))
