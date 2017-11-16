@@ -23,7 +23,7 @@ bus_service.create_queue('taskqueue')
 hostname = socket.gethostname()
 hostport = 9000
 sttime = time.time()
-graph_pts = []
+#graph_pts = []
 stmes = bus_service.get_queue('taskqueue').message_count
 
 # thread which maximizes CPU usage while the keepWorking global is True
@@ -46,7 +46,7 @@ def workerthread():
 
 def writebody():
     global sttime
-    global graph_pts
+    #global graph_pts
     body = '<html><head><title>work interface - build</title></head>'
     body += '<body><h2>worker interface on ' + hostname + '</h2><ul><h3>'
 
@@ -60,11 +60,11 @@ def writebody():
     body += '<br/>Messages processed: ' + str(current_count)
     body += '<br/>Time from start : ' + str(current_time) + ' seconds<br/>'
     body += '</h3></ul></body></html>'
-    graph_pts.append((current_count,current_time))
+    #graph_pts.append((current_count,current_time))
     return body
 
 threads = []
-for i in range(10):
+for i in range(20):
     t = threading.Thread(target=workerthread, args=())
     # Sticks the thread in a list so that it remains accessible
     threads.append(t)
