@@ -39,7 +39,7 @@ def workerthread():
             new_entity.RowKey = data['UserId']
             new_entity.Sellerid = data['SellerID']
             new_entity.ProductName = data['ProductName']
-            new_entity.SalePrice = data['SalePrice']
+            new_entity.SalePrice = data['SalePric']
             new_entity.TransactionDate = data['TransactionDate']
             table_service.insert_or_replace_entity('Transactions',new_entity)
             msg.delete()
