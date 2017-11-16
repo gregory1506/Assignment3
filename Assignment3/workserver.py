@@ -64,7 +64,7 @@ def writebody():
     return body
 
 threads = []
-for i in range(5):
+for i in range(10):
     t = threading.Thread(target=workerthread, args=())
     # Sticks the thread in a list so that it remains accessible
     threads.append(t)
