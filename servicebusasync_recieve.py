@@ -30,6 +30,7 @@ async def tblwrite(msg,session):
             pass
         else:
             asyncio.sleep(5)
+            print(msg,"I'm in table write")
             await tblwrite(msg,session)
         return response.status
 
@@ -65,7 +66,7 @@ async def run(r):
         responses = asyncio.gather(*tasks)
         await responses       
 
-N = 10
+N = 10000
 LOOP = asyncio.get_event_loop()
 FUTURE = asyncio.ensure_future(run(N))
 LOOP.run_until_complete(FUTURE)
