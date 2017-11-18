@@ -7,7 +7,7 @@ import base64
 def get_auth_token(sb_name, q_name, sas_name, sas_value):
     """
     Returns an authorization token dictionary 
-    for making calls to Azure Service bus REST API.
+    for making calls to Azure Service Bus REST API.
     """
     uri = quote_plus("https://{}.servicebus.windows.net/{}" \
                                   .format(sb_name, q_name))
