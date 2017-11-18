@@ -14,12 +14,16 @@ import datetime
 # new_entity.SalePrice = "hello"
 # new_entity.TransactionDate = "hello"
 # table_service.insert_or_replace_entity('Test',new_entity)
+
+tbendpoint = "https://gregseon4e059a98c11c.table.core.windows.net/"
+tblname = "Test"
+sas = "?sv=2017-04-17&ss=bfqt&srt=sco&sp=rwdlacup&se=2017-11-30T08:49:46Z&st=2017-11-18T00:49:46Z&spr=https&sig=XL0n1GIAFRslWdTOZY8ivSqK7hQqW7SZXpLHCWrUSmw%3D"
 data = json.dumps({"PartitionKey":"Hello","RowKey":"12334","Tomatoes":"yes"})
-headers = {'Authorization': "sv=2017-04-17&ss=bfqt&srt=sco&sp=rwdlacup&se=2017-11-18T06:16:34Z&st=2017-11-17T22:16:34Z&spr=https,http&sig=kyMSjameQr6mxIPzmlSO6yJWHDdn1T4i9nmP0AU9U9g%3D",\
-            'Content-Type':'application/json','Content-Length':str(len(data)),}
-tableuri = "https://gregseon4e059a98c11c.table.core.windows.net/Test"
-tableuri="https://gregseon4e059a98c11c.table.core.windows.net/Test/"
-r = requests.post(tableuri,headers=headers)
+# headers = {'Authorization': "sv=2017-04-17&tn=Test&ss=bfqt&srt=sco&sp=rwdlacup&se=2017-11-30T08:30:31Z&st=2017-11-18T00:30:31Z&sip=190.213.155.82&spr=https&sig=7PbNgkMzWeEGJ%2B3KDJCD4txfv6NgkrsiVO9h3C41hxM%3D",\
+            # 'Content-Type':'application/json;odata=nometadata','Content-Length':str(len(data))}
+headers = {'Content-Type':'application/json;odata=nometadata','Content-Length':str(len(data))}
+uri = tbendpoint + tblname + sas
+r = requests.post(uri,headers=headers,data=data)
 print(r)
 
 
