@@ -18,7 +18,7 @@ async def getmsg(session):
             await getmsg(session) # add another read if https breaks downs for this read. Message should still be in queue and unlocked for another competing consumer.
         msg = json.loads([x async for x in response.content][0])
         msginfo = json.loads(response.headers.get("BrokerProperties"))
-        print("{} {} {}".format(msginfo["LockToken"],msginfo["MessageId"],msg["failure"]))
+        # print("{} {} {}".format(msginfo["LockToken"],msginfo["MessageId"],msg["failure"]))
         return await response.read() 
 
 async def boundgetmsg(sem, session):
@@ -37,7 +37,7 @@ async def run(r):
         responses = asyncio.gather(*tasks)
         await responses       
 
-N = 1000000
+N = 10000
 LOOP = asyncio.get_event_loop()
 FUTURE = asyncio.ensure_future(run(N))
 LOOP.run_until_complete(FUTURE)
