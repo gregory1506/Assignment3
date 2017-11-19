@@ -40,7 +40,7 @@ async def run(r):
             userid = "A" + str(random.randint(1,1000))
             sellerid = "S" + str(random.randint(1,1000))
             failure = "no"
-            if _ % 50000 == 0:
+            if _ % 50000 == 0: # introducing a failure on every 50000 entry
                 failure = "yes"
             data = {"TransactionID":int(time.time()),"UserId":userid,'SellerID':sellerid,'ProductName':random.choice(products),"SalePrice":random.randint(1000,1000000),\
                     'TransactionDate':time.strftime("%Y-%m-%d"),'failure':failure}
@@ -49,7 +49,7 @@ async def run(r):
             if _ % 1000 == 0:
                 print(_)
         await asyncio.gather(*tasks)
-N = 10000
+N = 100000
 LOOP = asyncio.get_event_loop()
 FUTURE = asyncio.ensure_future(run(N))
 LOOP.run_until_complete(FUTURE)
