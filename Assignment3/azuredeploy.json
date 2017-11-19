@@ -273,7 +273,7 @@
                 "metricTrigger": {
                   "metricName": "ApproximateMessageCount",
                   "metricNamespace": "",
-                  "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/',parameters('queuename'))]",
+                  "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  'STORAGE_FOR_ALL2', '/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/',parameters('queuename'))]",
                   "timeGrain": "PT5M",
                   "statistic": "Average",
                   "timeWindow": "PT5M",
@@ -292,7 +292,7 @@
                 "metricTrigger": {
                   "metricName": "ApproximateMessageCount",
                   "metricNamespace": "",
-                  "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/',parameters('queuename'))]",
+                  "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  'STORAGE_FOR_ALL2', '/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/',parameters('queuename'))]",
                   "timeGrain": "PT5M",
                   "statistic": "Average",
                   "timeWindow": "PT5M",
