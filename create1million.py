@@ -49,7 +49,7 @@ async def run(r):
             if _ % 1000 == 0:
                 print(_)
         await asyncio.gather(*tasks)
-N = 1000000
+N = 10000
 LOOP = asyncio.get_event_loop()
 FUTURE = asyncio.ensure_future(run(N))
 LOOP.run_until_complete(FUTURE)
