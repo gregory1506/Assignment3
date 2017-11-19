@@ -6,7 +6,7 @@ from azure.servicebus import ServiceBusService, Message, Queue
 from config import queuename
 
 hostname = socket.gethostname()
-hostport = 9005
+hostport = 9000
 stime = time.time()
 status_msg = ''
 
