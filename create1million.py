@@ -11,17 +11,22 @@ sas = get_auth_token("gregseon4e059a98c11c",queuename,"RootManageSharedAccessKey
 
 async def sendmsg(data,session):
     ''' send message async '''
-    global sas
-    headers = {'Authorization':sas["token"],'Content-Type':'Content-Type: application/vnd.microsoft.servicebus.json'}
-    URL = "https://gregseon4e059a98c11c.servicebus.windows.net/"+queuename+"/messages"
-    async with session.post(URL, data=data, headers=headers) as response:
-        if response.status != 201:
-            asyncio.sleep(5) # sort of like a circuit breaker pattern. Wait 5 seconds and retry
-            await sendmsg(data, session)
-        return await response.read() 
+    try:
+        global sas
+        headers = {'Authorization':sas["token"],'Content-Type':'Content-Type: application/vnd.microsoft.servicebus.json'}
+        URL = "https://gregseon4e059a98c11c.servicebus.windows.net/"+queuename+"/messages"
+        async with session.post(URL, data=data, headers=headers) as response:
+            if response.status != 201:
+                asyncio.sleep(5) # sort of like a circuit breaker pattern. Wait 5 seconds and retry
+                await sendmsg(data, session)
+            return await response.read()
+    except asyncio.TimeoutError:
+        pass 
 
 async def boundsendmsg(sem, data, session):
-    ''' async semaphore '''
+    ''' async semaphore. A semaphore manages an internal counter which is decremented by each 
+        acquire() call and incremented by each release() call. The counter can never go below zero;
+        when acquire() finds that it is zero, it blocks, waiting until some other coroutine calls release(). '''
     async with sem:
         await sendmsg(data, session)
 
@@ -44,7 +49,7 @@ async def run(r):
             if _ % 1000 == 0:
                 print(_)
         await asyncio.gather(*tasks)
-N = 100
+N = 1000000
 LOOP = asyncio.get_event_loop()
 FUTURE = asyncio.ensure_future(run(N))
 LOOP.run_until_complete(FUTURE)

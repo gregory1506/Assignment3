@@ -235,6 +235,8 @@
                     "fileUris": [
                       "https://raw.githubusercontent.com/gregory1506/Assignment3/master/Assignment3/installserver.sh",
                       "https://raw.githubusercontent.com/gregory1506/Assignment3/master/Assignment3/workserver.py",
+                      "https://raw.githubusercontent.com/gregory1506/Assignment3/master/config.py",
+                      "https://raw.githubusercontent.com/gregory1506/Assignment3/master/read.py",
                       "https://raw.githubusercontent.com/gregory1506/Assignment3/master/sastoken.py"
                     ],
                     "commandToExecute": "bash installserver.sh"
@@ -263,15 +265,15 @@
             "name": "JsonScaler",
             "capacity": {
               "minimum": "1",
-              "maximum": "5",
+              "maximum": "4",
               "default": "1"
             },
             "rules": [
               {
                 "metricTrigger": {
-                  "metricName": "MessageCount",
+                  "metricName": "ApproximateMessageCount",
                   "metricNamespace": "",
-                  "metricResourceUri": "/subscriptions/d494b561-b40d-4b16-a8d1-d4a6bdcf54b2/resourcegroups/GregSeon/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/taskqueue",
+                  "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/',parameters('queuename'))]",
                   "timeGrain": "PT5M",
                   "statistic": "Average",
                   "timeWindow": "PT5M",
@@ -288,9 +290,9 @@
               },
               {
                 "metricTrigger": {
-                  "metricName": "MessageCount",
+                  "metricName": "ApproximateMessageCount",
                   "metricNamespace": "",
-                  "metricResourceUri": "/subscriptions/d494b561-b40d-4b16-a8d1-d4a6bdcf54b2/resourcegroups/GregSeon/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/taskqueue",
+                  "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.ServiceBus/namespaces/gregseon4e059a98c11c/queues/',parameters('queuename'))]",
                   "timeGrain": "PT5M",
                   "statistic": "Average",
                   "timeWindow": "PT5M",
