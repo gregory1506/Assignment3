@@ -9,15 +9,15 @@ from config import queuename, tablename
 #generate token for https comms
 sas = get_auth_token("gregseon4e059a98c11c",queuename,"RootManageSharedAccessKey","d8PrqA7to95t0wUFywAfhNDcbUwvh2sIpiHqvUdbPSQ=")
 
-# async def delfromqueue(msgid,lockid,session):
-#     ''' Delete a message from the queue using it lockid and mesageid '''
-#     global sas
-#     headers = {'Authorization':sas["token"],'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'}
-#     URL = "https://gregseon4e059a98c11c.servicebus.windows.net/"+queuename+"/messages/" + str(msgid) + "/" + str(lockid)
-#     async with session.delete(URL, headers=headers) as response:
-#         if response.status != 200:
-#             asyncio.sleep(5) # circuit breaker thant ensures message gets deleted. Well below the 30 second peek lock for the queue
-#             await delfromqueue(msgid,lockid,session)
+async def delfromqueue(msgid,lockid,session):
+    ''' Delete a message from the queue using it lockid and mesageid '''
+    global sas
+    headers = {'Authorization':sas["token"],'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'}
+    URL = "https://gregseon4e059a98c11c.servicebus.windows.net/"+queuename+"/messages/" + str(msgid) + "/" + str(lockid)
+    async with session.delete(URL, headers=headers) as response:
+        if response.status != 200:
+            asyncio.sleep(5) # circuit breaker thant ensures message gets deleted. Well below the 30 second peek lock for the queue
+            await delfromqueue(msgid,lockid,session)
         
 
 
@@ -43,19 +43,21 @@ async def getmsg(session):
     headers = {'Authorization':sas["token"], 'Content-Type': \
               'application/atom+xml;type=entry;charset=utf-8'}
     URL = "https://gregseon4e059a98c11c.servicebus.windows.net/"+queuename+"/messages/head"
-    async with session.delete(URL, headers=headers) as response:
-        if response.status not in (200,204):
+    async with session.post(URL, headers=headers) as response:
+        if response.status not in (201,204):
             # add another read if https breaks downs for this read.
             # Message should still be in queue and unlocked for another competing consumer.
             await getmsg(session)
         elif response.status == 204: # means queue empty and nothing to write to table. return now
             return None
         else: # means message recieved
-            msg = json.loads([x async for x in response.content][0].decode())
-            msginfo = json.loads(response.headers.get("BrokerProperties"))
-            print(msg)
-            status = await tblwrite(msg, session)
-                        
+            pass
+        msg = json.loads([x async for x in response.content][0].decode())
+        msginfo = json.loads(response.headers.get("BrokerProperties"))
+        status = await tblwrite(msg, session)
+        if status == 204:
+            #confirm write before delete
+            await delfromqueue(msginfo["MessageId"], msginfo["LockToken"], session)
         return await response.read()
 
 async def boundgetmsg(sem, session):
@@ -80,7 +82,7 @@ async def run(r):
 #     FUTURE = asyncio.ensure_future(run(N))
 #     LOOP.run_until_complete(FUTURE)
 
-N = 1000
+N = 100000
 LOOP = asyncio.get_event_loop()
 FUTURE = asyncio.ensure_future(run(N))
 LOOP.run_until_complete(FUTURE)
