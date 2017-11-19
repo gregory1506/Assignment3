@@ -1,7 +1,7 @@
 #!/bin/bash
-workserver_path=/srv/workserver
-mkdir $workserver_path
-cp *.py $workserver_path
+app_path=/srv/app
+mkdir $app_path
+cp *.py $app_path
 
 # install python3 stuff
 apt -y update
@@ -11,15 +11,24 @@ pip3 install azure-storage
 pip3 install azure-servicebus
 pip3 install aiohttp
 
-# create a service
-touch /etc/systemd/system/workserver.service
-printf '[Unit]\nDescription=workServer Service\nAfter=rc-local.service\n' >> /etc/systemd/system/workserver.service
-printf '[Service]\nWorkingDirectory=%s\n' $workserver_path >> /etc/systemd/system/workserver.service
-printf 'ExecStart=/usr/bin/python3 %s/workserver.py\n' $workserver_path >> /etc/systemd/system/workserver.service
-printf 'ExecReload=/bin/kill -HUP $MAINPID\nKillMode=process\nRestart=on-failure\n' >> /etc/systemd/system/workserver.service
-printf '[Install]\nWantedBy=multi-user.target\nAlias=workserver.service' >> /etc/systemd/system/workserver.service
+# create worker service
+touch /etc/systemd/system/worker.service
+printf '[Unit]\nDescription=worker Service\nAfter=rc-local.service\n' >> /etc/systemd/system/worker.service
+printf '[Service]\nWorkingDirectory=%s\n' $app_path >> /etc/systemd/system/worker.service
+printf 'ExecStart=/usr/bin/python3 %s/worker.py\n' $app_path >> /etc/systemd/system/worker.service
+printf 'ExecReload=/bin/kill -HUP $MAINPID\nKillMode=process\nRestart=on-failure\n' >> /etc/systemd/system/worker.service
+printf '[Install]\nWantedBy=multi-user.target\nAlias=worker.service' >> /etc/systemd/system/worker.service
 
-systemctl start workserver
+# create server service
+touch /etc/systemd/system/server.service
+printf '[Unit]\nDescription=server Service\nAfter=rc-local.service\n' >> /etc/systemd/system/server.service
+printf '[Service]\nWorkingDirectory=%s\n' $app_path >> /etc/systemd/system/server.service
+printf 'ExecStart=/usr/bin/python3 %s/server.py\n' $app_path >> /etc/systemd/system/server.service
+printf 'ExecReload=/bin/kill -HUP $MAINPID\nKillMode=process\nRestart=on-failure\n' >> /etc/systemd/system/server.service
+printf '[Install]\nWantedBy=multi-user.target\nAlias=server.service' >> /etc/systemd/system/server.service
+
+systemctl start worker
+systemctl start server
 
 
 

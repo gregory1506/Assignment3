@@ -23,6 +23,13 @@
       },
       "maxLength": 12
     },
+    "queuename": {
+      "type": "string",
+      "metadata": {
+        "description": "Try entering a different name each time to avoid Microsoft Insight Errors for your metric"
+      },
+      "maxLength": 12
+    },
     "instanceCount": {
       "type": "int",
       "metadata": {
@@ -234,7 +241,8 @@
                   "settings": {
                     "fileUris": [
                       "https://raw.githubusercontent.com/gregory1506/Assignment3/master/Assignment3/installserver.sh",
-                      "https://raw.githubusercontent.com/gregory1506/Assignment3/master/Assignment3/workserver.py",
+                      "https://raw.githubusercontent.com/gregory1506/Assignment3/master/worker.py",
+                      "https://raw.githubusercontent.com/gregory1506/Assignment3/master/server.py",
                       "https://raw.githubusercontent.com/gregory1506/Assignment3/master/config.py",
                       "https://raw.githubusercontent.com/gregory1506/Assignment3/master/read.py",
                       "https://raw.githubusercontent.com/gregory1506/Assignment3/master/sastoken.py"
