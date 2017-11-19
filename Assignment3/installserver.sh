@@ -1,7 +1,7 @@
 #!/bin/bash
 workserver_path=/srv/workserver
 mkdir $workserver_path
-cp workserver.py $workserver_path
+cp *.py $workserver_path
 
 # install python3 stuff
 apt -y update
@@ -9,6 +9,7 @@ apt -y install python3-bottle
 apt -y install python3-pip
 pip3 install azure-storage
 pip3 install azure-servicebus
+pip3 install aiohttp
 
 # create a service
 touch /etc/systemd/system/workserver.service

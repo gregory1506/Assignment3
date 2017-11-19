@@ -76,9 +76,9 @@ async def run(r):
         responses = asyncio.gather(*tasks)
         await responses       
 
-for i in range(12):
-    N = 10
+def readqueue(num_messages):
+    N = num_messages
     LOOP = asyncio.get_event_loop()
     FUTURE = asyncio.ensure_future(run(N))
     LOOP.run_until_complete(FUTURE)
-    print(N,i)
+

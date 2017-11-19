@@ -234,7 +234,8 @@
                   "settings": {
                     "fileUris": [
                       "https://raw.githubusercontent.com/gregory1506/Assignment3/master/Assignment3/installserver.sh",
-                      "https://raw.githubusercontent.com/gregory1506/Assignment3/master/Assignment3/workserver.py"
+                      "https://raw.githubusercontent.com/gregory1506/Assignment3/master/Assignment3/workserver.py",
+                      "https://raw.githubusercontent.com/gregory1506/Assignment3/master/sastoken.py"
                     ],
                     "commandToExecute": "bash installserver.sh"
                   }
