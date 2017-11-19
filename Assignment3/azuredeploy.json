@@ -71,7 +71,7 @@
     "osType": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
-      "sku": "16.04-LTS",
+      "sku": "17.10-DAILY",
       "version": "latest"
     },
     "imageReference": "[variables('osType')]",
