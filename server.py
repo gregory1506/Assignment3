@@ -7,7 +7,7 @@ from config import queuename
 
 hostname = socket.gethostname()
 hostport = 9000
-stime = time.time()
+stime = time.time() # very close to when things get kicked off
 status_msg = ''
 
 def status():
@@ -21,7 +21,7 @@ def status():
         queuesize = bus_service.get_queue(queuename).message_count
         numseconds = time.time() - stime
         status_msg = "Queue size is {} after {} seconds".format(queuesize,numseconds)
-        time.sleep(10)
+        time.sleep(5)
 
 def writebody():
     global status_msg
