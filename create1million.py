@@ -46,8 +46,7 @@ async def run(r):
                     'TransactionDate':time.strftime("%Y-%m-%d"),'failure':failure}
             task = asyncio.ensure_future(boundsendmsg(sem,json.dumps(data), session))
             tasks.append(task)
-            if _ % 1000 == 0:
-                print(_)
+            
         await asyncio.gather(*tasks)
 N = 100000
 LOOP = asyncio.get_event_loop()
