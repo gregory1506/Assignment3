@@ -2,7 +2,7 @@
 
 1.	Develop a mechanism to generate the requests your system faces.
 
-The file https://raw.githubusercontent.com/gregory1506/Assignment3/master/create1million.py contains the code used to generate the 1 million requests. A python script asynchronous writes to a queue over the Azure Rest API. 1million entries sent to queue in ~1934seconds
+The file https://raw.githubusercontent.com/gregory1506/Assignment3/master/create1million.py contains the code used to generate the 1 million requests. A python script asynchronous writes to a queue over the Azure Rest API. Please be advised that this code runs in python3.6 with the additional libraries "aiohttp" and "azure-servicebus" which are easily installable via pip3. However to avoid any possible library issues I am leaving the service bus queue "taskqueue" with 1million messages for you to start assessment. 1million entries sent to queue in ~1934seconds
 
 2.	Design and implement a solution using a  container-based approach or a 
 virtual machine-based one to process 1 million requests in an hour.  
