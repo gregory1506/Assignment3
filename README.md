@@ -2,7 +2,7 @@
 
 1.	Develop a mechanism to generate the requests your system faces.
 
-The file https://raw.githubusercontent.com/gregory1506/Assignment3/master/create1million.py contains the code used to generate the 1 million requests. A python script asynchronous writes to a queue over the Azure Rest API. 
+The file https://raw.githubusercontent.com/gregory1506/Assignment3/master/create1million.py contains the code used to generate the 1 million requests. A python script asynchronous writes to a queue over the Azure Rest API. 1million entries sent to queue in ~1934seconds
 
 2.	Design and implement a solution using a  container-based approach or a 
 virtual machine-based one to process 1 million requests in an hour.  
@@ -10,7 +10,7 @@ For your receivers introduce a failure rate.
 Store the occurrence of failures. 
 Justify how you chose to store and monitor failures. 
 
-In the generation step an attribute called “failure” was introduced and was labelled as such for every 50000th entry to the queue. The failures were written to a separate queue for processing at a later time to simulate an actual failure. Because the REST API was used again, the http response status codes of non manual failures (actual failures) was used to monitor failures. The appropriate actions was then taken accordingly. See Code snippets :
+In the generation step an attribute called “failure” was introduced and was labelled as such for every 50000th entry to the queue (the assignment did not specify if the failure should be random). The failures were written to a separate queue for processing at a later time to simulate an actual failure. Because the REST API was used again, the http response status codes of non manual failures (actual https failures) was used to monitor failures. The appropriate actions was then taken accordingly. See Code snippets :
 
 https://raw.githubusercontent.com/gregory1506/Assignment3/master/sastoken.py 
 This Code generates the token required to communicate over the REST API.
@@ -22,7 +22,7 @@ https://raw.githubusercontent.com/gregory1506/Assignment3/master/read.py
 Asynchronously read from the Service bus queue that holds the json requests. Once a read is confirmed it is deleted from the queue and writted to an azure table as permanent storage
 
 https://raw.githubusercontent.com/gregory1506/Assignment3/master/server.py
-This will become part of a linux service. It basically uses a bottle framework to produce a web server. Produces simple text to show the size of the Service bus Queue ans the elapsed time. Wish I knew javscript/jquery to makes this info more exciting......but another time since its not part of assignment.
+This will become part of a linux service. It basically uses a bottle framework to produce a web server. Produces simple text to show the size of the Service bus Queue and the elapsed time. Wish I knew javscript/jquery to makes this info more exciting......but another time since its not part of assignment. Cane be accessed after about 5 mins of launching ARM template visa publicip:9000
 
 https://raw.githubusercontent.com/gregory1506/Assignment3/master/worker.py
 The Worker service that runs on an infinite loop to process messages on the queue. Adjusts workload based on size of queue.
@@ -44,7 +44,7 @@ Table Storage ----> First 1 TB / Month 	$0.07 per GB
 
 Virtual Machines ----> A1 $0.024/hour per VM
 
-So for roughly 2 hrs concerning the assignment we estimate ~2USD exluding the 10USD upfront cost of the Service.
+So for roughly 2 hrs concerning the assignment we estimate ~4USD exluding the 10USD upfront cost of the Service Bus Queues.
 
 4. How would your design treat with a doubling of the load? 
 

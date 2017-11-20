@@ -1,2 +1,3 @@
-queuename = "test5scaling"
-tablename = "Test"
+queuename = "taskqueue"
+tablename = "Transactions"
+failqueue = "Failures"

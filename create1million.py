@@ -5,6 +5,12 @@ import asyncio
 from aiohttp import ClientSession
 from sastoken import get_auth_token
 from config import queuename
+from azure.servicebus import ServiceBusService
+
+bus_service = ServiceBusService(service_namespace='gregseon4e059a98c11c',\
+    shared_access_key_name='RootManageSharedAccessKey',\
+    shared_access_key_value='d8PrqA7to95t0wUFywAfhNDcbUwvh2sIpiHqvUdbPSQ=')
+bus_service.create_queue(queuename)  # create if not exists
 
 #generate token for https comms
 sas = get_auth_token("gregseon4e059a98c11c",queuename,"RootManageSharedAccessKey","d8PrqA7to95t0wUFywAfhNDcbUwvh2sIpiHqvUdbPSQ=")
@@ -48,7 +54,7 @@ async def run(r):
             tasks.append(task)
             
         await asyncio.gather(*tasks)
-N = 100000
+N = 1000000
 LOOP = asyncio.get_event_loop()
 FUTURE = asyncio.ensure_future(run(N))
 LOOP.run_until_complete(FUTURE)
